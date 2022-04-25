@@ -2,7 +2,8 @@
   "dependencies": {
     "express": "^4.17.3",
     "morgan": "^1.10.0",
-    "multer": "^1.4.4"
+    "multer": "^1.4.4",
+    "sharp": "^0.30.4"
   },
   "name": "thumbnail-generator-api",
   "description": "## Goal Build a simple API that generates thumbnails from a source image",
