@@ -1,5 +1,5 @@
 const sharp = require("sharp");
-const fs = require("fs");
+// const fs = require("fs");
 
 async function changeSize(image, width, height) {
   const updatedImage = await sharp(image.buffer)
@@ -10,37 +10,34 @@ async function changeSize(image, width, height) {
   return updatedImage;
 }
 
-async function saveToDisk(image, name) {
-  fs.writeFileSync(`thumbnails/${name}`, image);
-}
+// async function saveToDisk(image, name) {
+//   fs.writeFileSync(`thumbnails/${name}`, image);
+// }
 
 async function newThumbnail(image, width, height, name) {
-  //ver de problemas con la extension
-
   const thumbnail = await changeSize(image, width, height);
-  saveToDisk(thumbnail, name);
-  return thumbnail;
+  const response = await uploadImage(thumbnail, name);
+  return response;
 }
 
 const createThumbnails = async function (image) {
   try {
     const RESIZE_VALUES = ["400x300", "160x120", "120x120"];
-    const completeName = image.originalname.split(".");
+    //removes spaces and splits to get extension
+    const completeName = image.originalname.replace(/\s+/g, "").split(".");
     const extension = completeName.pop();
-    const thumbnails = RESIZE_VALUES.map(async (size, i) => {
+    const thumbnails = RESIZE_VALUES.map(async (size) => {
+      //creates a new string with the original, the size and the original extension.
       const name = completeName.join("_") + "_" + size + "." + extension;
       const [width, height] = size.split("x");
-
       const thumbnail = await newThumbnail(
         image,
         parseInt(width),
         parseInt(height),
-        name.toLocaleLowerCase()
+        name
       );
-
-      return { img: thumbnail.toString("base64"), name: name };
+      return { size: size, key: thumbnail.Key };
     });
-
     return Promise.all(thumbnails);
   } catch (error) {
     console.log(error);
@@ -55,7 +52,39 @@ function validateObject(image) {
   return null;
 }
 
+const bucketName = process.env.AWS_BUCKET_NAME;
+const region = process.env.AWS_BUCKET_REGION;
+const accessKeyId = process.env.AWS_ACCESS_KEY;
+const secretAccessKey = process.env.AWS_SECRET_KEY;
+
+const S3 = require("aws-sdk/clients/s3");
+const s3 = new S3({
+  region,
+  accessKeyId,
+  secretAccessKey,
+});
+
+function uploadImage(image, name) {
+  const uploadParams = {
+    Bucket: "jordimiyai-thumbnail",
+    Body: image,
+    Key: name,
+  };
+
+  return s3.upload(uploadParams).promise();
+}
+
+function fetchThumbnail(imageKey) {
+  const downloadParams = {
+    Bucket: bucketName,
+    Key: imageKey,
+  };
+
+  return s3.getObject(downloadParams).createReadStream();
+}
 module.exports = {
   createThumbnails,
   validateObject,
+  uploadImage,
+  fetchThumbnail,
 };
