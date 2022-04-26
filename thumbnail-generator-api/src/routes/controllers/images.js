@@ -1,4 +1,8 @@
-const { createThumbnails, validateObject } = require("../services/images");
+const {
+  createThumbnails,
+  validateObject,
+  fetchThumbnail,
+} = require("../services/images");
 
 const addImage = async function (req, res) {
   try {
@@ -12,6 +16,17 @@ const addImage = async function (req, res) {
     console.log(error);
   }
 };
+
+const getImage = function (req, res) {
+  try {
+    const { key } = req.params;
+    const thumbnail = fetchThumbnail(key);
+    thumbnail.pipe(res);
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
   addImage,
+  getImage,
 };
