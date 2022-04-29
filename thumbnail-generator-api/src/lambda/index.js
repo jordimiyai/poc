@@ -20,3 +20,5 @@ exports.handler = async (event, context, callback) => {
      
    };
    
+// Example get:
+// https://sjvxqr727b.execute-api.us-east-1.amazonaws.com/default/eimi-tn?bucket=jordimiyai-thumbnail&key=florabeja_400x300.jpg
