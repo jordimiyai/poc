@@ -7,11 +7,14 @@ const {
 const addImage = async function (req, res) {
   try {
     const image = req.file;
-    if (validateObject(image)) {
-      res.status(400);
+    const validated = validateObject(image)
+    if (validated) {
+      res.status(400.6).send(validated);
+    } 
+    else {
+      const response = await createThumbnails(image);
+      res.status(200).send(response);
     }
-    const response = await createThumbnails(image);
-    res.status(200).send(response);
   } catch (error) {
     console.log(error);
   }
