@@ -1,1 +1,1 @@
-This project has as objective allowing users to upload an image from their computers and receive 3 different sized thumbnails. Using NodeJs, Express, S3 Bucket, and different libraries such as Multer and Sharp. I intend to add an interface using React ASAP.
+This project has as objective allowing users to upload an image from their computers and receive 3 different sized thumbnails. Using NodeJs, Express, S3 Bucket, and different libraries such as Multer and Sharp. I intend to create the frontend using React ASAP.
